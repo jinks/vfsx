@@ -7,7 +7,7 @@
 	<META NAME="AUTHOR" CONTENT="Steven R. Farley">
 	<META NAME="CREATED" CONTENT="20040703;6224265">
 	<META NAME="CHANGEDBY" CONTENT="Steven Farley">
-	<META NAME="CHANGED" CONTENT="20040704;7131530">
+	<META NAME="CHANGED" CONTENT="20040706;6593466">
 	<STYLE>
 	<!--
 		@page { size: 8.5in 11in }
@@ -23,11 +23,7 @@ forwards operations to a process on the same machine for handing
 outside of the Samba daemon process (smbd). The external handler can
 be implemented in any language with support for Unix domain sockets
 (Python, Ruby, Perl, Java with Jtux) which is how VFSX and its
-external process communicates. For every VFS operation invoked by the
-Samba daemon, VFSX sends to the handler the name of the operation,
-the local directory path of the shared SMB service, the ID of the
-calling user, and any additional arguments required for the
-operation.</P>
+external process communicates.</P>
 <P>The advantage of using VFSX over a pure VFS module is that any
 programming language can be used to implement the transparent
 operations. VFS modules linked directly into the Samba daemon must be
@@ -39,22 +35,32 @@ configuration with VFSX:</P>
 <P><IMG SRC="config.png" NAME="Figure 1" ALIGN=BOTTOM WIDTH=590 HEIGHT=216 BORDER=0></P>
 <P>For Samba shares configured with VFSX as a VFS module, all client
 requests to manipulate files and directories will first be sent to
-the external handler process. The handler may respond to any
-operation for which it is designed. Note that since VFSX is a
-transparent module, file contents may not be passed between the VFSX
-module and its handler; The Samba daemon must still handle the file
-system I/O directly. However, the external handler may choose to
-reject an operation and return an error code which will be passed on
-to the client.</P>
-<P><B><FONT SIZE=4>Links</FONT></B></P>
+the external handler process. For every VFS operation invoked by the
+Samba daemon, VFSX sends to the handler the name of the operation,
+the local directory path of the shared SMB service, the ID of the
+calling user, and any additional arguments required for the
+operation. The handler may respond to any operation for which it is
+designed. Note that since VFSX is a transparent module, file contents
+may not be passed between the VFSX module and its handler; The Samba
+daemon must still handle the file system I/O directly. However, the
+external handler may choose to reject an operation and return an
+error code which will be passed on to the client.</P>
+<P>Included with VFSX is an external handler written in Python.
+Developers can extend this implementation to provide custom operation
+handling.</P>
+<P><FONT SIZE=4><B>Links</B></FONT></P>
 <UL>
 	<LI><P><A HREF="http://sourceforge.net/projects/vfsx/">VFSX Project
 	Page at SourceForge</A></P>
+	<LI><P><A HREF="http://www.samba.org/">Samba Home Page</A></P>
 	<LI><P><A HREF="http://www.samba.org/samba/docs/man/howto/VFS.html">Samba
 	VFS Module Configuration</A></P>
 	<LI><P><A HREF="http://www.samba.org/samba/devel/docs/html/Samba-Developers-Guide.html#vfs">Samba
 	VFS Module Developers Guide</A></P>
+	<LI><P><A HREF="http://www.python.org/">Python Home Page</A></P>
 </UL>
+<P><BR><BR>
+</P>
 <P><BR><BR>
 </P>
 </BODY>
