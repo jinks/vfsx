@@ -1,9 +1,10 @@
 # This module contains classes for implementing a custom VFSX handler.
 # Copyright (C) Steven R. Farley 2004
 
-import SocketServer
+import sys
 import os
 import os.path
+import SocketServer
 import logging
 import traceback
 
@@ -230,55 +231,30 @@ class VFSHandler(SocketServer.BaseRequestHandler):
 
 
 def runServer(vfsSessionClass):
+	log.info("Starting socket server using session class '%s.%s'"
+		% (vfsSessionClass.__module__, vfsSessionClass.__name__))
 	if os.path.exists(SOCKET_FILE):
 		os.unlink(SOCKET_FILE)
 	VFSModuleSession.setSessionClass(vfsSessionClass)
 	server = SocketServer.UnixStreamServer(SOCKET_FILE, VFSHandler)
-	server.serve_forever()
+	try:
+		server.serve_forever()
+	except Exception, e:
+		log.info("Socket server stopped due to exception '%s'" % e.__class__)
 
 # Initialize default VFSModuleSession class
 VFSModuleSession.setSessionClass(VFSModuleSession)
 
 if __name__ == "__main__":
-	runServer(VFSModuleSession)
 
-"""
-	/* Directory operations */
-
-	SMB_VFS_OP_OPENDIR,
-	SMB_VFS_OP_READDIR,
-	SMB_VFS_OP_MKDIR,
-	SMB_VFS_OP_RMDIR,
-	SMB_VFS_OP_CLOSEDIR,
-
-	/* File operations */
-
-	SMB_VFS_OP_OPEN,
-	SMB_VFS_OP_CLOSE,
-	SMB_VFS_OP_READ,
-	SMB_VFS_OP_PREAD,
-	SMB_VFS_OP_WRITE,
-	SMB_VFS_OP_PWRITE,
-	SMB_VFS_OP_LSEEK,
-	SMB_VFS_OP_SENDFILE,
-	SMB_VFS_OP_RENAME,
-	SMB_VFS_OP_FSYNC,
-	SMB_VFS_OP_STAT,
-	SMB_VFS_OP_FSTAT,
-	SMB_VFS_OP_LSTAT,
-	SMB_VFS_OP_UNLINK,
-	SMB_VFS_OP_CHMOD,
-	SMB_VFS_OP_FCHMOD,
-	SMB_VFS_OP_CHOWN,
-	SMB_VFS_OP_FCHOWN,
-	SMB_VFS_OP_CHDIR,
-	SMB_VFS_OP_GETWD,
-	SMB_VFS_OP_UTIME,
-	SMB_VFS_OP_FTRUNCATE,
-	SMB_VFS_OP_LOCK,
-	SMB_VFS_OP_SYMLINK,
-	SMB_VFS_OP_READLINK,
-	SMB_VFS_OP_LINK,
-	SMB_VFS_OP_MKNOD,
-	SMB_VFS_OP_REALPATH,
-"""
+	# If no args given, handle requests with the base VFSModuleSession class.
+	if len(sys.argv) == 1:
+		runServer(VFSModuleSession)
+	# If 2 args are provided, treat them as the module name and class name of
+	# the VFSModuleSession subclass to use for handling requests.
+	else:
+		modulename = sys.argv[1]
+		clsname = sys.argv[2]
+		module = __import__(modulename, globals(), locals(), [clsname])
+		cls =  vars(module)[clsname]
+		runServer(cls)
