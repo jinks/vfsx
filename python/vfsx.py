@@ -4,6 +4,7 @@
 import SocketServer
 import os
 import os.path
+import logging
 import traceback
 
 # General error.  VFS operation should not proceed.
@@ -21,6 +22,11 @@ SUCCESS_TRANSPARENT = 0
 
 # The Unix domain socket file
 SOCKET_FILE = "/tmp/vfsx-socket"
+
+# Logger for this module
+logging.basicConfig()
+log = logging.getLogger("vfsx")
+log.setLevel(logging.DEBUG)
 
 class VFSOperationResult(object):
 
@@ -50,18 +56,18 @@ class VFSModuleSession(object):
 		key = (origpath, user)
 		if sessions.has_key(key):
 			session = sessions[key]
-			print "Existing session: %s" % session
+			log.debug("Existing session: %s" % session)
 		else:
 			session = VFSModuleSession.__sessionClass(*key)
 			sessions[key] = session
-			print "New session: %s" % session
+			log.debug("New session: %s" % session)
 		return session
 	getSession = staticmethod(getSession)
 
 	def removeSession(session):
 		key = (session.origpath, session.user)
 		del VFSModuleSession.__sessions[key]
-		print "Removed session: %s" % session
+		log.debug("Removed session: %s" % session)
 	removeSession = staticmethod(removeSession)
 
 	# Instance methods
@@ -181,37 +187,34 @@ class VFSModuleSession(object):
 class VFSHandler(SocketServer.BaseRequestHandler):
 
 	def handle(self):
-		print "\n-- Open Connection --"
+		log.debug("-- Open Connection --")
 		while True:
 			msg = self.request.recv(512)
 			if not msg: break
-			print msg
+			log.debug(msg)
 			# Handle message-parsing and operation execution error here.
 			# Socket communication errors should be propagated.
 			try:
 				(operation, user, origpath, args) = self.__parseMessage(msg)
 				result = self.__callOperation(operation, user, origpath, args)
-			except:
+			except Exception, e:
 				result = VFSOperationResult(FAIL_ERROR)
-				traceback.print_exc()
+				log.exception(e)
 			self.request.send("%d" % result.status)
 
 		# The client probably closed the connection.
 		self.request.close()
-		print "-- Close Connection --"
+		log.debug("Close Connection")
 
 	def __parseMessage(self, msg):
 		parts = msg.split(":")
 		(operation, user, origpath) = parts[0:3]
+		log.debug("  operation = '%s' user = '%s' origpath = '%s'" %
+			(operation, user, origpath))
 		args = []
 		if len(parts) > 3:
 			args = parts[3].split(",")
-		print "  operation = '%s' user = '%s' origpath = '%s'" % \
-			(operation, user, origpath)
-		print "  args =",
-		for arg in args:
-			print arg,
-		print
+			log.debug("  args = '%s'" % parts[3])
 		return (operation, user, origpath, args)
 
 	def __callOperation(self, operation, user, origpath, args):
