@@ -1,4 +1,18 @@
+===================================
 README for VFSX
-===============
+Version 0.1
+
+Copyright (C) 2004 Steven R. Farley
+All rights reserved
+===================================
 
 This is the VFSX main project directory.
+
+Contents:
+  README     This file
+  LICENSE    The Common Public License (CPL) terms
+  docs/      Documentation
+  module/    Samba VFS module
+  python/    Python external handler
+
+The main documentation file is docs/vfsx.html

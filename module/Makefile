@@ -10,7 +10,7 @@ OBJEXT		= o
 FLAGS		=  $(CFLAGS) -I/usr/include -Iinclude -I$(SAMBA_SOURCE)/include -I$(SAMBA_SOURCE)/ubiqx -I$(SAMBA_SOURCE)/smbwrapper  -I. $(CPPFLAGS) -I$(SAMBA_SOURCE)
 
 
-prefix		= /usr/local/samba
+prefix		= /usr/lib/samba
 libdir		= ${prefix}/lib
 
 VFS_LIBDIR	= $(libdir)/vfs
@@ -38,6 +38,4 @@ clean:
 	rm -rf .libs
 	rm -f core *~ *% *.bak *.o *.$(SHLIBEXT)
 
-distclean: clean
-	rm config.* Makefile
 

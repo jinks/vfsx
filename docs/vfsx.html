@@ -7,7 +7,7 @@
 	<META NAME="AUTHOR" CONTENT="Steven R. Farley">
 	<META NAME="CREATED" CONTENT="20040703;6224265">
 	<META NAME="CHANGEDBY" CONTENT="Steven Farley">
-	<META NAME="CHANGED" CONTENT="20040718;13263622">
+	<META NAME="CHANGED" CONTENT="20040723;7433886">
 	<STYLE>
 	<!--
 		@page { size: 8.5in 11in }
@@ -16,7 +16,7 @@
 </HEAD>
 <BODY LANG="en-US" DIR="LTR">
 <P><FONT SIZE=4 STYLE="font-size: 16pt"><B>VFSX</B> &ndash; Samba VFS
-External Bridge</FONT></P>
+External Bridge<BR><FONT SIZE=4>Version 0.1</FONT></FONT></P>
 <P><FONT SIZE=4><B>Overview</B></FONT></P>
 <P>VFSX is a transparent Samba Virtual File System (VFS) module which
 forwards operations to a process on the same machine for handing
@@ -49,33 +49,35 @@ error code which will be passed on to the client.</P>
 Developers can extend this implementation to provide custom operation
 handling.</P>
 <P><FONT SIZE=4><B>Deploying the VFSX Module</B></FONT></P>
-<P>VFSX requires Samba 3.0 or higher.  All directory and file paths
+<P>VFSX requires Samba 3.0 or higher. All directory and file paths
 described in the following instructions are based on Fedora Core 2 so
 be sure to substitute paths as appropriate for your Linux
 distribution.</P>
 <OL>
 	<LI><P>Install Samba 3.0, including the source distribution.</P>
-	<LI><P>Download and expand the VFSX source distribution file
+	<LI><P>Download and expand the VFSX source distribution file:
 	<FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">vfsx-0.1.tar.gz</FONT></FONT>.</P>
 	<LI><P>Edit <FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">vfsx-0.1</FONT></FONT>/<FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">module/Makefile</FONT></FONT>
 	and modify the <FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">SAMBA_SOURCE</FONT></FONT>
 	variable to point to your Samba source directory.</P>
 	<LI><P>Build the VFSX shared library: <FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">make</FONT></FONT></P>
-</OL>
-<OL START=4>
 	<LI><P>Attach VFSX to a Samba shared directory by adding the VFSX
 	module name to the share's configuration parameters (found in
 	<FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">/etc/samba/smb.conf</FONT></FONT>).
-	 For example:<BR><FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">[myshare]<BR>comment
+	For example:<BR><FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">[myshare]<BR>comment
 	= VFSX-Aware Shared Directory<BR>path = /home/myuser/shared/<BR>valid
-	users = myuser<BR>read only = No<BR>map archive = No<BR>map system =
-	No<BR>map hidden = No<BR>vfs objects = vfsx</FONT></FONT></P>
+	users = myuser<BR>read only = No<BR>vfs objects = vfsx</FONT></FONT></P>
 	<LI><P>Deploy the VFSX shared library (as root):<BR><FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">cp
 	vfsx-0.1/module/vfsx.so /usr/lib/samba/vfs/</FONT></FONT></P>
 	<LI><P>Restart Samba (as root):<BR><FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">/etc/rc.d/init.d/smb
 	restart</FONT></FONT></P>
-	<LI><P>Test by running the Python external event handler:<BR><FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">python
+	<LI><P>Run the Python external event handler:<BR><FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">python
 	vfsx-0.1/python/vfsx.py</FONT></FONT></P>
+	<LI><P><FONT FACE="Times New Roman, serif"><FONT SIZE=3>Access the
+	share using smbclient or from a Windows system.  By default the
+	Python handler prints debug activity messages to the console.  If
+	the module has problems communicating with the external handler,
+	error messages are written to syslog.</FONT></FONT></P>
 </OL>
 <P><FONT SIZE=4><B>Developing a Custom VFSX Handler with Python</B></FONT></P>
 <OL>
@@ -93,9 +95,10 @@ distribution.</P>
 	VFS Module Developers Guide</A></P>
 	<LI><P><A HREF="http://www.python.org/">Python Home Page</A></P>
 </UL>
-<P><BR><BR>
-</P>
-<P><BR><BR>
-</P>
+<P><FONT SIZE=4><B>License</B></FONT></P>
+<P>VFSX is distributed under the open source <A HREF="http://opensource.org/licenses/cpl.php">Common
+Public License</A>.  The file <FONT SIZE=2 STYLE="font-size: 11pt"><FONT FACE="Courier New, monospace">vfsx-0.1/LICENSE</FONT></FONT>
+contains the license terms.</P>
+<P>Copyright (C) 2004 Steven R. Farley.  All rights reserved.</P>
 </BODY>
 </HTML>

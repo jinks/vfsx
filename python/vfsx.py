@@ -1,5 +1,8 @@
+#
 # This module contains classes for implementing a custom VFSX handler.
-# Copyright (C) Steven R. Farley 2004
+#
+# Copyright (C) 2004 Steven R. Farley.  All rights reserved.
+#
 
 import sys
 import os

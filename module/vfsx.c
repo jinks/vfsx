@@ -3,7 +3,7 @@
  * This transparent VFS module sends VFS operations over a Unix domain
  * socket for external handling.
  *
- * Copyright (C) Steven R. Farley 2004
+ * Copyright (C) 2004 Steven R. Farley.  All rights reserved.
  */
 
 #include "includes.h"
