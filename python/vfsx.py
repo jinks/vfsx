@@ -1,3 +1,6 @@
+# This module contains classes for implementing a custom VFSX handler.
+# Copyright (C) Steven R. Farley 2004
+
 import SocketServer
 import os
 import os.path
@@ -232,6 +235,9 @@ def runServer(vfsSessionClass):
 
 # Initialize default VFSModuleSession class
 VFSModuleSession.setSessionClass(VFSModuleSession)
+
+if __name__ == "__main__":
+	runServer(VFSModuleSession)
 
 """
 	/* Directory operations */
