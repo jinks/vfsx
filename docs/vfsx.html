@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+	<META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=windows-1252">
+	<TITLE>VFSX</TITLE>
+	<META NAME="GENERATOR" CONTENT="OpenOffice.org 1.1.1  (Win32)">
+	<META NAME="AUTHOR" CONTENT="Steven R. Farley">
+	<META NAME="CREATED" CONTENT="20040703;6224265">
+	<META NAME="CHANGEDBY" CONTENT="Steven Farley">
+	<META NAME="CHANGED" CONTENT="20040703;6512612">
+	<STYLE>
+	<!--
+		@page { size: 8.5in 11in }
+	-->
+	</STYLE>
+</HEAD>
+<BODY LANG="en-US" DIR="LTR">
+<P><FONT SIZE=4><B>VFSX</B></FONT></P>
+<P>VFSX is a transparent Samba Virtual File System (VFS) module which
+forwards operations to a process on the same machine for handing
+outside of the Samba daemon process (smbd). The external handler can
+be implemented in any language with support for Unix domain sockets
+(Python, Ruby, Perl, Java with Jtux) which is how VFSX and its
+external process communicates. For every VFS operation invoked by the
+Samba daemon, VFSX sends to the handler the name of the operation,
+the local directory path of the shared SMB service, the ID of the
+calling user, and any additional arguments required for the
+operation.</P>
+<P>The advantage of using VFSX over a pure VFS module is that any
+programming language can be used to implement the transparent
+operations. VFS modules linked directly into the Samba daemon must be
+written in C or C++. while VFSX lets the developer implement a
+transparent module in his favorite higher-level language, with all
+the advantages of that language, outside of the smbd process.</P>
+<P>Figure 1 shows a typical configuration:</P>
+<P><IMG SRC="config.png" NAME="Graphic1" ALIGN=BOTTOM WIDTH=593 HEIGHT=218 BORDER=0></P>
+<P ALIGN=CENTER>Figure 1: VFSX Configuration</P>
+<P>A client machine opens a shared directory on the file server. For
+Samba shares configured with VFSX as a VFS module, all requests to
+manipulate files will first be sent to the external handler process.
+The handler may respond to any operation for which it is designed.
+Note that since VFSX is a transparent module, file contents may not
+be passed between the VFSX module and its handler; The Samba daemon
+must still handle the file system I/O directly. However, the external
+handler may choose to reject an operation and return an error code
+which will be passed on to the client.</P>
+</BODY>
+</HTML>
