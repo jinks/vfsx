@@ -296,19 +296,6 @@ static int vfsx_rename(vfs_handle_struct *handle, connection_struct *conn, const
 	return result;
 }
 
-static int vfsx_fsync(vfs_handle_struct *handle, files_struct *fsp, int fd)
-{
-	int result = -1;
-	int count;
-	char buf[VFSX_MSG_OUT_SIZE];
-
-	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "fsync:%s:%s:%s", fsp->conn->user, fsp->conn->origpath, fsp->fsp_name);
-	if (vfsx_execute(buf, count) == VFSX_SUCCESS_TRANSPARENT) {
-		result = SMB_VFS_NEXT_FSYNC(handle, fsp, fd);
-	}
-	return result;
-}
-
 static int vfsx_unlink(vfs_handle_struct *handle, connection_struct *conn, const char *path)
 {
 	int result = -1;
@@ -381,7 +368,6 @@ static vfs_op_tuple vfsx_op_tuples[] = {
 	{SMB_VFS_OP(vfsx_pwrite),		SMB_VFS_OP_PWRITE,		SMB_VFS_LAYER_TRANSPARENT},
 	{SMB_VFS_OP(vfsx_lseek),		SMB_VFS_OP_LSEEK,		SMB_VFS_LAYER_TRANSPARENT},
 	{SMB_VFS_OP(vfsx_rename), 		SMB_VFS_OP_RENAME, 		SMB_VFS_LAYER_TRANSPARENT},
-	{SMB_VFS_OP(vfsx_fsync),		SMB_VFS_OP_FSYNC,		SMB_VFS_LAYER_TRANSPARENT},
 	{SMB_VFS_OP(vfsx_unlink), 		SMB_VFS_OP_UNLINK, 		SMB_VFS_LAYER_TRANSPARENT},
 /*
 	{SMB_VFS_OP(vfsx_chmod), 		SMB_VFS_OP_CHMOD, 		SMB_VFS_LAYER_TRANSPARENT},

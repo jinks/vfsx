@@ -6,7 +6,6 @@ import os
 import os.path
 import SocketServer
 import logging
-import traceback
 
 # General error.  VFS operation should not proceed.
 FAIL_ERROR = -1
@@ -130,9 +129,6 @@ class VFSModuleSession(object):
 		return VFSOperationResult(SUCCESS_TRANSPARENT)
 
 	def rename(self, oldPath, newPath):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def fsync(self, path):
 		return VFSOperationResult(SUCCESS_TRANSPARENT)
 
 	def unlink(self, path):
