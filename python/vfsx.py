@@ -86,7 +86,7 @@ class VFSModuleSession(object):
 	def defaultOperation(self, *args):
 		return VFSOperationResult(NOT_IMPLEMENTED)
 
-	# VFS connect operations
+	# VFS disk operations
 
 	def connect(self):
 		return VFSOperationResult(SUCCESS_TRANSPARENT)
@@ -99,16 +99,10 @@ class VFSModuleSession(object):
 	def opendir(self, path):
 		return VFSOperationResult(SUCCESS_TRANSPARENT)
 
-	def readdir(self, path):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
 	def mkdir(self, path, mode):
 		VFSOperationResult(SUCCESS_TRANSPARENT)
 
 	def rmdir(self, path):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def closedir(self, path):
 		return VFSOperationResult(SUCCESS_TRANSPARENT)
 
 
@@ -141,44 +135,9 @@ class VFSModuleSession(object):
 	def fsync(self, path):
 		return VFSOperationResult(SUCCESS_TRANSPARENT)
 
-	def stat(self, path):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def fstat(self, path):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def lstat(self, path):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
 	def unlink(self, path):
 		return VFSOperationResult(SUCCESS_TRANSPARENT)
 
-	def chmod(self, path, mode):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def fchmod(self, path, mode):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def chown(self, path, uid, guid):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def fchown(self, path, uid, guid):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def chdir(self, path):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def getwd(self):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def utime(self, path):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def ftruncate(self, path, offset):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
-
-	def realpath(self, path, resolvedPath):
-		return VFSOperationResult(SUCCESS_TRANSPARENT)
 
 
 # Expects a string of the form "operation:user:origpath:arg1,arg2,arg3" where
