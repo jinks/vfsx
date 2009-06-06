@@ -1,12 +1,12 @@
 CC		= gcc
-CFLAGS		= -g -O2 
-CPPFLAGS	=  
-LDFLAGS		= 
+CFLAGS		= -g -O2 -fPIC
+CPPFLAGS	=
+LDFLAGS		=
 LDSHFLAGS	= -shared
 INSTALLCMD	= /usr/bin/install -c
 SAMBA_SOURCE	= /usr/local/src/samba/source
 SHLIBEXT	= so
-OBJEXT		= o 
+OBJEXT		= o
 FLAGS		=  $(CFLAGS) -I/usr/include -Iinclude -I$(SAMBA_SOURCE)/include -I$(SAMBA_SOURCE)/ubiqx -I$(SAMBA_SOURCE)/smbwrapper  -I. $(CPPFLAGS) -I$(SAMBA_SOURCE)
 
 
@@ -37,5 +37,3 @@ install: default
 clean:
 	rm -rf .libs
 	rm -f core *~ *% *.bak *.o *.$(SHLIBEXT)
-
-

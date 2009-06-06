@@ -19,6 +19,7 @@
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
+ * Copyright (C) 2009 Alexander Duscheleit
  *
  * ***** END LICENSE BLOCK ***** */
 
@@ -98,7 +99,8 @@ static int vfsx_write_socket(const char *str, int close_socket)
 			ret = read(sd, in, VFSX_MSG_IN_SIZE);
 			if (ret != -1) {
 				result = atoi(in);
-				syslog(LOG_NOTICE, "vfsx_write_socket (%d) received '%s'", count++, in);
+				/* too chatty */
+                /* syslog(LOG_NOTICE, "vfsx_write_socket (%d) received '%s'", count++, in); */
 				if (close_socket) {
 					syslog(LOG_NOTICE, "vfsx_write_socket closing normally");
 					close(sd);
@@ -149,80 +151,80 @@ static int vfsx_execute(const char *buf, int count)
 
 /* VFS handler functions */
 
-static int vfsx_connect(vfs_handle_struct *handle, connection_struct *conn, const char *svc, const char *user)
+static int vfsx_connect(vfs_handle_struct *handle, const char *svc, const char *user)
 {
 	int result = -1;
 	int count;
 	char buf[VFSX_MSG_OUT_SIZE];
 
-	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "connect:%s:%s", conn->user, conn->origpath);
+	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "connect:%s:%s", handle->conn->user, handle->conn->origpath);
 	if (vfsx_execute(buf, count) == VFSX_SUCCESS_TRANSPARENT) {
-		result = SMB_VFS_NEXT_CONNECT(handle, conn, svc, user);
+		result = SMB_VFS_NEXT_CONNECT(handle, svc, user);
 	}
 	return result;
 }
 
-static void vfsx_disconnect(vfs_handle_struct *handle, connection_struct *conn)
+static void vfsx_disconnect(vfs_handle_struct *handle)
 {
 	int count;
 	char buf[VFSX_MSG_OUT_SIZE];
 
-	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "disconnect:%s:%s", conn->user, conn->origpath);
+	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "disconnect:%s:%s", handle->conn->user, handle->conn->origpath);
 	if (vfsx_execute(buf, count) == VFSX_SUCCESS_TRANSPARENT) {
-		SMB_VFS_NEXT_DISCONNECT(handle, conn);
+		SMB_VFS_NEXT_DISCONNECT(handle);
 	}
 	return;
 }
 
-static DIR *vfsx_opendir(vfs_handle_struct *handle, connection_struct *conn, const char *fname)
+static DIR *vfsx_opendir(vfs_handle_struct *handle, const char *fname, const char *mask, uint32 attr)
 {
 	// TODO: Is this the correct error value?
 	DIR *result = NULL;
 	int count;
 	char buf[VFSX_MSG_OUT_SIZE];
 
-	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "opendir:%s:%s:%s", conn->user, conn->origpath, fname);
+	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "opendir:%s:%s:%s", handle->conn->user, handle->conn->origpath, fname);
 	if (vfsx_execute(buf, count) == VFSX_SUCCESS_TRANSPARENT) {
-		result = SMB_VFS_NEXT_OPENDIR(handle, conn, fname);
+		result = SMB_VFS_NEXT_OPENDIR(handle, fname, mask, attr);
 	}
 	return result;
 }
 
-static int vfsx_mkdir(vfs_handle_struct *handle, connection_struct *conn, const char *path, mode_t mode)
+static int vfsx_mkdir(vfs_handle_struct *handle, const char *path, mode_t mode)
 {
 	int result = -1;
 	int count;
 	char buf[VFSX_MSG_OUT_SIZE];
 
-	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "mkdir:%s:%s:%s,%d", conn->user, conn->origpath, path, mode);
+	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "mkdir:%s:%s:%s,%d", handle->conn->user, handle->conn->origpath, path, mode);
 	if (vfsx_execute(buf, count) == VFSX_SUCCESS_TRANSPARENT) {
-		result = SMB_VFS_NEXT_MKDIR(handle, conn, path, mode);
+		result = SMB_VFS_NEXT_MKDIR(handle, path, mode);
 	}
 	return result;
 }
 
-static int vfsx_rmdir(vfs_handle_struct *handle, connection_struct *conn, const char *path)
+static int vfsx_rmdir(vfs_handle_struct *handle, const char *path)
 {
 	int result = -1;
 	int count;
 	char buf[VFSX_MSG_OUT_SIZE];
 
-	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "rmdir:%s:%s:%s", conn->user, conn->origpath, path);
+	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "rmdir:%s:%s:%s", handle->conn->user, handle->conn->origpath, path);
 	if (vfsx_execute(buf, count) == VFSX_SUCCESS_TRANSPARENT) {
-		result = SMB_VFS_NEXT_RMDIR(handle, conn, path);
+		result = SMB_VFS_NEXT_RMDIR(handle, path);
 	}
 	return result;
 }
 
-static int vfsx_open(vfs_handle_struct *handle, connection_struct *conn, const char *fname, int flags, mode_t mode)
+static int vfsx_open(vfs_handle_struct *handle, const char *fname, files_struct *fsp, int flags, mode_t mode)
 {
 	int result = -1;
 	int count;
 	char buf[VFSX_MSG_OUT_SIZE];
 
-	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "open:%s:%s:%s,%d,%d", conn->user, conn->origpath, fname, flags, mode);
+	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "open:%s:%s:%s,%d,%d", handle->conn->user, handle->conn->origpath, fname, flags, mode);
 	if (vfsx_execute(buf, count) == VFSX_SUCCESS_TRANSPARENT) {
-		result = SMB_VFS_NEXT_OPEN(handle, conn, fname, flags, mode);
+		result = SMB_VFS_NEXT_OPEN(handle, fname, fsp, flags, mode);
 	}
 	return result;
 }
@@ -305,28 +307,28 @@ static SMB_OFF_T vfsx_lseek(vfs_handle_struct *handle, files_struct *fsp, int fi
 	return result;
 }
 
-static int vfsx_rename(vfs_handle_struct *handle, connection_struct *conn, const char *old, const char *new)
+static int vfsx_rename(vfs_handle_struct *handle, const char *old, const char *new)
 {
 	int result = -1;
 	int count;
 	char buf[VFSX_MSG_OUT_SIZE];
 
-	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "rename:%s:%s:%s,%s", conn->user, conn->origpath, old, new);
+	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "rename:%s:%s:%s,%s", handle->conn->user, handle->conn->origpath, old, new);
 	if (vfsx_execute(buf, count) == VFSX_SUCCESS_TRANSPARENT) {
-		result = SMB_VFS_NEXT_RENAME(handle, conn, old, new);
+		result = SMB_VFS_NEXT_RENAME(handle, old, new);
 	}
 	return result;
 }
 
-static int vfsx_unlink(vfs_handle_struct *handle, connection_struct *conn, const char *path)
+static int vfsx_unlink(vfs_handle_struct *handle, const char *path)
 {
 	int result = -1;
 	int count;
 	char buf[VFSX_MSG_OUT_SIZE];
 
-	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "unlink:%s:%s:%s", conn->user, conn->origpath, path);
+	count = snprintf(buf, VFSX_MSG_OUT_SIZE, "unlink:%s:%s:%s", handle->conn->user, handle->conn->origpath, path);
 	if (vfsx_execute(buf, count) == VFSX_SUCCESS_TRANSPARENT) {
-		result = SMB_VFS_NEXT_UNLINK(handle, conn, path);
+		result = SMB_VFS_NEXT_UNLINK(handle, path);
 	}
 	return result;
 }
