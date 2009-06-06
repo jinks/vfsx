@@ -1,13 +1,13 @@
 CC		= gcc
-CFLAGS		= -g -O2 -fPIC
-CPPFLAGS	=
-LDFLAGS		=
+CFLAGS		= -g -Os -fPIC
+CPPFLAGS	=  
+LDFLAGS		= 
 LDSHFLAGS	= -shared
 INSTALLCMD	= /usr/bin/install -c
 SAMBA_SOURCE	= /usr/local/src/samba/source
 SHLIBEXT	= so
 OBJEXT		= o
-FLAGS		=  $(CFLAGS) -I/usr/include -Iinclude -I$(SAMBA_SOURCE)/include -I$(SAMBA_SOURCE)/ubiqx -I$(SAMBA_SOURCE)/smbwrapper  -I. $(CPPFLAGS) -I$(SAMBA_SOURCE)
+FLAGS		=  $(CFLAGS) -I/usr/include -Iinclude -I$(SAMBA_SOURCE)/librpc -I$(SAMBA_SOURCE)/tdb/include -I$(SAMBA_SOURCE)/lib/replace -I$(SAMBA_SOURCE)/include -I$(SAMBA_SOURCE)/ubiqx -I$(SAMBA_SOURCE)/smbwrapper  -I. $(CPPFLAGS) -I$(SAMBA_SOURCE)
 
 
 prefix		= /usr/lib/samba
@@ -37,3 +37,5 @@ install: default
 clean:
 	rm -rf .libs
 	rm -f core *~ *% *.bak *.o *.$(SHLIBEXT)
+
+
